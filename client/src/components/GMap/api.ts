@@ -1,13 +1,6 @@
 import { IPosition } from "@/types/map";
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
 
-export const fetchTrafficSignals = async () => {
-
-
-    
-
-}
-
 export const fetchRoute = async (origin: IPosition, destination: IPosition) => {
     const requestBody = {
         origin: {

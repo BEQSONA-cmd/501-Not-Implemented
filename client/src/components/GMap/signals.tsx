@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { ITrafficSignal } from "@/types/map";
-import data from "@/data/traffic_signals.json"
+// import data from "@/data/traffic_signals.json"
 
 // const useTrafficSignals = () => {
 //     const [trafficSignals, setTrafficSignals] = useState<ITrafficSignal[]>([]);
@@ -95,21 +95,31 @@ const useTrafficSignals = () => {
         return phase;
     }
 
+    const updateSyncTime = () => {
+        const now = new Date().toISOString();
+        setTrafficSignals((prevSignals) =>
+            prevSignals.map((signal) => ({
+                ...signal,
+                sync_time: now,
+            }))
+        );
+    }
+
     const fetchTrafficSignals = async () => {
         try {
-            // const response = await fetch("http://localhost:5000/signals");
-            // const data = await response.json();
-            // setTrafficSignals(data);
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/api/traffic-signals`);
+            const data = await response.json();
+            setTrafficSignals(data);
 
-            const newData = data.map((signal: any) => {
-                return {
-                    ...signal,
-                    phases: [20, 2, 30, 1],
-                    sync_time: new Date().toISOString(),
-                }
-            });
+            // const newData = data.map((signal: any) => {
+            //     return {
+            //         ...signal,
+            //         phases: [20, 2, 30, 1],
+            //         sync_time: new Date().toISOString(),
+            //     }
+            // });
 
-            setTrafficSignals(newData as unknown as ITrafficSignal[]);
+            // setTrafficSignals(newData as unknown as ITrafficSignal[]);
         } catch (error) {
             console.error("Error fetching traffic signals:", error);
         }
@@ -117,7 +127,7 @@ const useTrafficSignals = () => {
 
     useEffect(() => {
         fetchTrafficSignals();
-        intervalRef.current = setInterval(fetchTrafficSignals, 10000);
+        intervalRef.current = setInterval(updateSyncTime, 1000);
         return () => {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current);
