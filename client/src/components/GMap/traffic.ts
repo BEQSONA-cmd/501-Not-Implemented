@@ -33,16 +33,17 @@ export const findTrafficSignal = (positions: IPosition[], signals: ITrafficSigna
             });
 
             if (trafficSignal)
-                return {
-                    ...trafficSignal,
-                    state: "green",
+                return trafficSignal;
+                // return {
+                //     ...trafficSignal,
+                //     state: "green",
                 
-                    time_remaining: 8,
+                //     time_remaining: 8,
 
-                    yellow_time: 4,
-                    red_time: 10,
-                    green_time: 8,
-                };
+                //     yellow_time: 4,
+                //     red_time: 10,
+                //     green_time: 8,
+                // };
         }
     }
 

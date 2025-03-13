@@ -3,7 +3,7 @@ export interface IPosition {
     lng: number;
 }
 
-export interface ITrafficSignal {
+export interface ITrafficSignal_OLD {
     id: number;
     lat: number;
     lon: number;
@@ -15,9 +15,18 @@ export interface ITrafficSignal {
     state: "red" | "yellow" | "green";
     cycle_offset: number; 
 
+
     tags: {
         highway: string;
         traffic_signals: string;
         "traffic_signals:direction": string;
     };
+}
+
+export interface ITrafficSignal {
+    id: number;
+    lat: number;
+    lon: number;
+    phases: number[]; // green yellow red red-yellow
+    sync_time: string;
 }
