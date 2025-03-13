@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { IPosition } from "@/types/map";
 import { useMap } from "./provider";
@@ -10,9 +10,19 @@ const containerStyle = {
     height: "100vh",
 };
 
+const NextSignal = ({ lat, lng }: IPosition) => {
+    const position = { lat, lng };
+    return (
+        <div className="absolute text-black p-2 top-0 left-1/2 frame-border bg-white z-10">
+            <h1>Closest Signal</h1>
+            <p>State: </p>
+            <p>Time Remaining: </p>
+        </div>
+    );
+}
 
 function GMap() {
-    const { position, onLoad, onUnmount, destination, newDestinationRoute, closestSignal, trafficSignals, getSignalState } = useMap();
+    const { map, position, onLoad, onUnmount, destination, newDestinationRoute, closestSignal, trafficSignals, getSignalState } = useMap();
 
     const handleMapClick = (event: google.maps.MapMouseEvent) => {
         const clickedPosition: IPosition = {
@@ -21,6 +31,13 @@ function GMap() {
         };
         newDestinationRoute(clickedPosition);
     };
+
+    useEffect(() => {
+        if(!position) return ;
+
+        map?.setCenter(position);
+        map?.setZoom(17);
+    },[position])
 
     return (
         <div>
@@ -63,7 +80,10 @@ function GMap() {
                 })}
 
                 {closestSignal && (
-                    <Marker position={{ lat: closestSignal.lat, lng: closestSignal.lon }} />
+                    <>
+                        <Marker position={{ lat: closestSignal.lat, lng: closestSignal.lon }} />
+                        <NextSignal lat={closestSignal.lat} lng={closestSignal.lon} />
+                    </>
                 )}
             </GoogleMap>
             {/* {closestSignal && (

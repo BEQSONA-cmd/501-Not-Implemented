@@ -1,8 +1,8 @@
 services:
-  client:
-    build: client/
-    ports:
-      - "3000:3000"
+  # client:
+  #   build: client/
+  #   ports:
+  #     - "3000:3000"
   api:
     build: api/
     ports:
