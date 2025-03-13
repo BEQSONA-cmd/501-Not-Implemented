@@ -28,7 +28,7 @@ CORS(app)
 
 @app.route('/api/traffic-signals')
 def get_data():
-    with open('../data.json') as f:
+    with open('data.json') as f:
         data = add_time(json.load(f))
     return jsonify(data)
 
