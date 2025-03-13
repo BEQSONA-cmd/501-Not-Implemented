@@ -1,4 +1,4 @@
-### Bild
+### Build
 ```Bash
 docker compose build
 ```
