@@ -31,7 +31,7 @@ times = [random.randint(20, 60), random.randint(20, 60), 4]
     
 def add_time(data):
     for i in range(len(data)):
-        data[i]["sync-time"] = "2025-03-13T21:49:43.836146"
+        data[i]["sync_time"] = "2025-03-13T21:49:43.836146"
         data[i]["phases"] = [
             20, 2, 30, 1
         ]
@@ -42,7 +42,7 @@ CORS(app)
 
 @app.route('/api/traffic-signals')
 def get_data():
-    with open('data.json') as f:
+    with open('./data.json') as f:
         data = add_time(json.load(f))
     return jsonify(data)
 

@@ -7,6 +7,7 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 COPY src/ ./src/
+COPY data.json ./data.json
 
 EXPOSE 8080
 
