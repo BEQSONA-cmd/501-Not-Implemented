@@ -31,9 +31,9 @@ times = [random.randint(20, 60), random.randint(20, 60), 4]
     
 def add_time(data):
     for i in range(len(data)):
-        data[i]["sync_time"] = "2025-03-13T21:49:43.836146"
+        data[i]["sync_time"] = f"2025-03-13T21:49:{random.randint(1,10)}.000000"
         data[i]["phases"] = [
-            20, 2, 30, 1
+            1, 1, 1, 1
         ]
     return data
 

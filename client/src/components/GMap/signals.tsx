@@ -84,6 +84,19 @@ export interface ITrafficSignal {
 
 */
 
+function getPhase(time: number, phases: number[]) {
+    let cumulativeTime = 0;
+    
+    for (let i = 0; i < phases.length; i++) {
+        if (time <= cumulativeTime) {
+          console.log(i)
+          return i;
+        }
+        cumulativeTime += phases[i];
+    }
+    return -1
+  }
+
 const useTrafficSignals = () => {
     const [trafficSignals, setTrafficSignals] = useState<ITrafficSignal[]>([]);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -91,7 +104,8 @@ const useTrafficSignals = () => {
     const getSignalState = (time: number, signal: ITrafficSignal) => {
         const now = new Date().getTime();
         const diff = now - time;
-        const phase = Math.floor(diff / 10000) % 4;
+        const period = signal.phases.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        const phase = getPhase(diff % period, signal.phases)
         return phase;
     }
 

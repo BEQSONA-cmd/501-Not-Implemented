@@ -64,7 +64,7 @@ function GMap() {
 
                     const stateIndex = getSignalState(diff, e);
                     let state = states[stateIndex];
-                    console.log(state, stateIndex);
+                    // console.log(state, stateIndex);
 
                     return (
                         <Marker
