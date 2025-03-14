@@ -131,7 +131,6 @@ export function MapProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.code === "Space") {
-                console.log(route);
                 event.preventDefault();
                 moveForward();
             }

@@ -89,7 +89,6 @@ function getPhase(time: number, phases: number[]) {
     
     for (let i = 0; i < phases.length; i++) {
         if (time <= cumulativeTime) {
-          console.log(i)
           return i;
         }
         cumulativeTime += phases[i];
@@ -109,15 +108,15 @@ const useTrafficSignals = () => {
         return phase;
     }
 
-    const updateSyncTime = () => {
-        const now = new Date().toISOString();
-        setTrafficSignals((prevSignals) =>
-            prevSignals.map((signal) => ({
-                ...signal,
-                sync_time: now,
-            }))
-        );
-    }
+    // const updateCurrentTime = () => {
+    //     const now = new Date().toISOString();
+    //     setTrafficSignals((prevSignals) =>
+    //         prevSignals.map((signal) => ({
+    //             ...signal,
+    //             sync_time: now,
+    //         }))
+    //     );
+    // }
 
     const fetchTrafficSignals = async () => {
         try {
@@ -141,12 +140,12 @@ const useTrafficSignals = () => {
 
     useEffect(() => {
         fetchTrafficSignals();
-        intervalRef.current = setInterval(updateSyncTime, 1000);
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
+        // intervalRef.current = setInterval(updateCurrentTime, 1000);
+        // return () => {
+        //     if (intervalRef.current) {
+        //         clearInterval(intervalRef.current);
+        //     }
+        // };
     }, []);
 
     return { getSignalState, trafficSignals };

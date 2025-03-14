@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import { IPosition } from "@/types/map";
+import { IPosition, ITrafficSignal } from "@/types/map";
 import { useMap } from "./provider";
 
 const containerStyle = {
@@ -11,7 +11,6 @@ const containerStyle = {
 };
 
 const NextSignal = ({ lat, lng }: IPosition) => {
-    const position = { lat, lng };
     return (
         <div className="absolute text-black p-2 top-0 left-1/2 frame-border bg-white z-10">
             <h1>Closest Signal</h1>
@@ -19,10 +18,58 @@ const NextSignal = ({ lat, lng }: IPosition) => {
             <p>Time Remaining: </p>
         </div>
     );
-}
+};
+
+const getCurrentSignalState = (signal: ITrafficSignal, currentTime: number) => {
+    const fixedDateString = signal.sync_time.replace(/T(\d{2}):(\d{2}):(\d)\./, "T$1:$2:0$3.");
+
+    const pastDate = new Date(fixedDateString);
+
+    if (isNaN(pastDate.getTime())) {
+        console.error("Invalid sync_time:", fixedDateString);
+        return { state: "unknown", timeRemaining: 0 };
+    }
+
+    const pastTimestamp = Math.floor(pastDate.getTime() / 1000);
+    const timeElapsed = currentTime - pastTimestamp;
+
+    const cycleLength = signal.phases.reduce((a, b) => a + b, 0);
+    const timeInCycle = timeElapsed % cycleLength;
+
+    let cumulativeTime = 0;
+    const states = ["green", "yellow", "red", "red-yellow"];
+
+    for (let i = 0; i < signal.phases.length; i++) {
+        cumulativeTime += signal.phases[i];
+
+        if (timeInCycle < cumulativeTime) {
+            const timeRemaining = cumulativeTime - timeInCycle;
+            return { state: states[i], timeRemaining };
+        }
+    }
+
+    return { state: "unknown", timeRemaining: 0 };
+};
 
 function GMap() {
-    const { map, position, onLoad, onUnmount, destination, newDestinationRoute, closestSignal, trafficSignals, getSignalState } = useMap();
+    const {
+        map,
+        position,
+        onLoad,
+        onUnmount,
+        destination,
+        newDestinationRoute,
+        closestSignal,
+        trafficSignals,
+    } = useMap();
+    const [currentTime, setCurrentTime] = useState(Math.floor(new Date().getTime() / 1000));
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime((prev) => prev + 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleMapClick = (event: google.maps.MapMouseEvent) => {
         const clickedPosition: IPosition = {
@@ -33,11 +80,10 @@ function GMap() {
     };
 
     useEffect(() => {
-        if(!position) return ;
-
+        if (!position) return;
         map?.setCenter(position);
         map?.setZoom(17);
-    },[position])
+    }, [position]);
 
     return (
         <div>
@@ -55,16 +101,7 @@ function GMap() {
                         lng: e.lon,
                     };
 
-                    const time = new Date(e.sync_time).getTime();
-                    const now = new Date().getTime();
-                    const diff = now - time;
-                    // TODO: Implement logic to determine the current state of the signal
-
-                    const states = ["green", "yellow", "red", "red-yellow"];
-
-                    const stateIndex = getSignalState(diff, e);
-                    let state = states[stateIndex];
-                    // console.log(state, stateIndex);
+                    const { state } = getCurrentSignalState(e, currentTime);
 
                     return (
                         <Marker
@@ -86,13 +123,6 @@ function GMap() {
                     </>
                 )}
             </GoogleMap>
-            {/* {closestSignal && (
-                <div className="absolute bg-black text-white p-2 bottom-0 left-0 z-10">
-                    <h1>Closest Signal</h1>
-                    <p>State: {closestSignal.state}</p>
-                    <p>Time Remaining: {closestSignal.time_remaining}</p>
-                </div>
-            )} */}
         </div>
     );
 }
